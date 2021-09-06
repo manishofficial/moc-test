@@ -58,39 +58,20 @@ class ReactApiController extends Controller
 
         try {
             $input = $request->all();
-            $record = ReactApi::where('phone', $request->phone)->first();
-            if (empty($record)) {
-                if ($image = $request->file('file')) {
-                    $logoImg = date('YmdHis') . "." . $image->getClientOriginalExtension();
-                    $folder = 'public/'.$request->phone.'/'.$request->store;
-                    $request->file->storeAs($folder, $logoImg);
-                    $input['file'] = [asset('storage').'/'.$request->phone.'/'.$request->store.'/'.$logoImg];
-                }
-
-                ReactApi::create($input);
-
-                return response()->json([
-                    'status' => true,
-                    'data' => [],
-                    'msg' => "Entry creted successful"
-                ],200);
-            }else {
-                $files =  $record->file;
-                if ($image = $request->file('file')) {
-                    $logoImg = date('YmdHis') . "." . $image->getClientOriginalExtension();
-                    $folder = 'public/'.$request->phone.'/'.$request->store;
-                    $request->file->storeAs($folder, $logoImg);
-                    $files[] = asset('storage').'/'.$request->phone.'/'.$request->store.'/'.$logoImg;
-                }
-
-                $record->update(['file'=> $files]);
-
-                return response()->json([
-                    'status' => true,
-                    'data' => [],
-                    'msg' => "Entry found with number so file update successful"
-                ],200);
+            if ($image = $request->file('file')) {
+                $logoImg = date('YmdHis') . "." . $image->getClientOriginalExtension();
+                $folder = 'public/'.$request->phone.'/'.$request->store;
+                $request->file->storeAs($folder, $logoImg);
+                $input['file'] = [asset('storage').'/'.$request->phone.'/'.$request->store.'/'.$logoImg];
             }
+
+            ReactApi::create($input);
+
+            return response()->json([
+                'status' => true,
+                'data' => [],
+                'msg' => "Entry creted successful"
+            ],200);
         } catch ( \Exception $e ) {
             return response()->json([
                 'status' => false,
